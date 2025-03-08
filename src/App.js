@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
   const MIN_COUNT = 0;
 
-  const [count, setCount] = useState(0);
-  const [maxCount, setMaxCount] = useState(10);
+  const initialState = JSON.parse(localStorage.getItem("counterData")) || { count: 0, maxCount: 10 };
+
+  const [count, setCount] = useState(initialState.count);
+  const [maxCount, setMaxCount] = useState(initialState.maxCount);
+
+  useEffect(() => {
+    localStorage.setItem("counterData", JSON.stringify({ count, maxCount }));
+  }, [count, maxCount]);
 
   const incrementCount = () => {
     if(count < maxCount){
