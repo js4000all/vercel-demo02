@@ -31,7 +31,14 @@ function Counter({title}) {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div style={{
+      textAlign: "center", 
+      marginTop: "20px",
+      border: "2px solid #555", /* 枠線を濃くする */
+      padding: "20px", 
+      borderRadius: "10px",
+      backgroundColor: "#f8f8f8" /* 背景色を少しグレーに */  
+      }}>
       <h2>{title}</h2>
       <p>v0.0.2</p>
       <p>現在のカウント: {count}</p>
