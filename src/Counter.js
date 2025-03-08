@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import RadioGroup from "./RadioGroup";
 
 function Counter({title}) {
-  const MIN_COUNT = 0;
-
   const initialState = JSON.parse(localStorage.getItem("counterData")) || { count: 0, maxCount: 10 };
 
   const [count, setCount] = useState(initialState.count);
