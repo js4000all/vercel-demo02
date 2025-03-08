@@ -5,9 +5,8 @@ function App() {
   return (
     <div>
       <h1>カウンターアプリ</h1>
-      <Counter />
-      <Counter />
-      <Counter />
+      <Counter title="カウンターA" />
+      <Counter title="カウンターB" />
     </div>
   );
 }
