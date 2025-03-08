@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import RadioGroup from "./RadioGroup";
 
 function Counter({title}) {
   const MIN_COUNT = 0;
@@ -6,6 +7,7 @@ function Counter({title}) {
   const initialState = JSON.parse(localStorage.getItem("counterData")) || { count: 0, maxCount: 10 };
 
   const [count, setCount] = useState(initialState.count);
+  const [minCount, setMinCount] = useState(0);
   const [maxCount, setMaxCount] = useState(initialState.maxCount);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ function Counter({title}) {
     }
   };
   const decrementCount = () => {
-    if(count > MIN_COUNT){
+    if(count > minCount){
       setCount(count - 1);
     }
   };
@@ -29,6 +31,13 @@ function Counter({title}) {
     const newMax = parseInt(target.value, 10);
     setMaxCount(newMax);
   };
+  const changeMinCount = ({target}) => {
+    const newMin = parseInt(target.value, 0);
+    setMinCount(newMin);
+    if (count < newMin) {
+      setCount(newMin);
+    }
+  }
 
   return (
     <div style={{
@@ -41,16 +50,18 @@ function Counter({title}) {
       }}>
       <h2>{title}</h2>
       <p>v0.0.2</p>
-      <p>現在のカウント: {count}</p>
-      <button onClick={incrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
-        +1 する
-      </button>
-      <button onClick={decrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
-        -1 する
-      </button>
-      <button onClick={resetCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
-        RESET
-      </button>
+      <div>
+        現在のカウント: {count} ({minCount}-{maxCount})
+        <button onClick={incrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
+          +1 する
+        </button>
+        <button onClick={decrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
+          -1 する
+        </button>
+        <button onClick={resetCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
+          RESET
+        </button>
+      </div>
       <hr />
       <div style={{ marginTop: "20px" }}>
         <label>上限値を設定: </label>
@@ -61,6 +72,16 @@ function Counter({title}) {
           style={{ fontSize: "16px", padding: "5px", width: "80px", textAlign: "center" }}
         />
       </div>
+      <RadioGroup
+        label="下限値を選択:"
+        options={[
+          { value: 0, label: "0" },
+          { value: 5, label: "5" },
+          { value: 10, label: "10" }
+        ]}
+        selectedValue={minCount}
+        onChange={changeMinCount}
+      />
     </div>
   );
 }
