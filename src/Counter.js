@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Counter() {
+function Counter({title}) {
   const MIN_COUNT = 0;
 
   const initialState = JSON.parse(localStorage.getItem("counterData")) || { count: 0, maxCount: 10 };
@@ -25,15 +25,15 @@ function Counter() {
   const resetCount = () => {
     setCount(0);
   };
-  const changeMaxCount = (event) => {
-    const newMax = parseInt(event.target.value, 10);
+  const changeMaxCount = ({target}) => {
+    const newMax = parseInt(target.value, 10);
     setMaxCount(newMax);
   };
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>カウンター</h2>
-      <p>v0.0.1</p>
+      <h2>{title}</h2>
+      <p>v0.0.2</p>
       <p>現在のカウント: {count}</p>
       <button onClick={incrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
         +1 する
