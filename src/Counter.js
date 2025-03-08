@@ -32,7 +32,7 @@ function Counter() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>カウンター</h1>
+      <h2>カウンター</h2>
       <p>v0.0.1</p>
       <p>現在のカウント: {count}</p>
       <button onClick={incrementCount} style={{ fontSize: "20px", padding: "10px 20px" }}>
