@@ -4,7 +4,7 @@ function RadioGroup({ label, options, selectedValue, onChange }) {
   return (
     <div style={{ marginTop: "15px" }}>
       <label>{label}</label>
-      <div>
+      <span>
         {options.map((option) => (
           <label key={option.value} style={{ marginLeft: "10px" }}>
             <input
@@ -16,7 +16,7 @@ function RadioGroup({ label, options, selectedValue, onChange }) {
             {option.label}
           </label>
         ))}
-      </div>
+      </span>
     </div>
   );
 }
