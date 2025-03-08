@@ -58,4 +58,4 @@ function Counter() {
   );
 }
 
-export default App;
+export default Counter;
