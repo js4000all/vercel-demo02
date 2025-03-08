@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 
 function App() {
-  // カウントを保持する state
+  const MIN_COUNT = 0;
+
   const [count, setCount] = useState(0);
 
   const incrementCount = () => {
     setCount(count + 1);
   };
   const decrementCount = () => {
-    setCount(count - 1);
+    if(count > MIN_COUNT){
+      setCount(count - 1);
+    }
   };
   const resetCount = () => {
     setCount(0);
