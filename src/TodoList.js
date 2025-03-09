@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+export const LOCAL_STORAGE_KEY = "todoList";
 
 function TodoList() {
-  const [tasks, setTasks] = useState([]);
+  const initialState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+
+  const [tasks, setTasks] = useState(initialState);
   const [input, setInput] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = () => {
     if (input.trim() === "") return;
