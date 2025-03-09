@@ -14,6 +14,14 @@ function TodoList() {
     setTasks(tasks.filter((_, i) => i !== index));
   };
 
+  const deleteAllTasks = () => {
+    if (tasks.length === 0) return; // タスクがない場合は何もしない
+    const isConfirmed = window.confirm("すべてのタスクを削除しますか？");
+    if (isConfirmed) {
+      setTasks([]);
+    }
+  };
+
   return (
     <div>
       <h2>Todoリスト</h2>
@@ -25,6 +33,9 @@ function TodoList() {
         placeholder="タスクを入力"
       />
       <button onClick={addTask}>追加</button>
+      <button onClick={deleteAllTasks} disabled={tasks.length === 0}>
+        全削除
+      </button>
       <ul>
         {tasks.map((task, index) => (
           <li key={index}>
