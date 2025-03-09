@@ -66,5 +66,69 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.queryByText("タスクB")).not.toBeInTheDocument();
     expect(screen.getByText("タスクA")).toBeInTheDocument();
     expect(screen.getByText("タスクC")).toBeInTheDocument();
-  });  
+  });
+
+  test("全削除ボタンをクリックしてOKすると、すべてのタスクが削除される", () => {
+    render(<TodoList />);
+    const input = screen.getByPlaceholderText("タスクを入力");
+    const addButton = screen.getByText("追加");
+
+    // タスクを3つ追加
+    fireEvent.change(input, { target: { value: "タスク1" } });
+    fireEvent.click(addButton);
+    fireEvent.change(input, { target: { value: "タスク2" } });
+    fireEvent.click(addButton);
+    fireEvent.change(input, { target: { value: "タスク3" } });
+    fireEvent.click(addButton);
+
+    // 全削除ボタンをクリック
+    const deleteAllButton = screen.getByText("全削除");
+    jest.spyOn(window, "confirm").mockImplementation(() => true);
+    fireEvent.click(deleteAllButton);
+
+    // すべてのタスクが削除されていることを確認
+    expect(screen.queryByText("タスク1")).not.toBeInTheDocument();
+    expect(screen.queryByText("タスク2")).not.toBeInTheDocument();
+    expect(screen.queryByText("タスク3")).not.toBeInTheDocument();
+  });
+
+  test("全削除ボタンをクリックしてキャンセルすると、タスクは削除されない", () => {
+    render(<TodoList />);
+    const input = screen.getByPlaceholderText("タスクを入力");
+    const addButton = screen.getByText("追加");
+
+    // タスクを3つ追加
+    fireEvent.change(input, { target: { value: "タスク1" } });
+    fireEvent.click(addButton);
+    fireEvent.change(input, { target: { value: "タスク2" } });
+    fireEvent.click(addButton);
+    fireEvent.change(input, { target: { value: "タスク3" } });
+    fireEvent.click(addButton);
+
+    // 全削除ボタンをクリック（キャンセルを選択）
+    const deleteAllButton = screen.getByText("全削除");
+    jest.spyOn(window, "confirm").mockImplementation(() => false);
+    fireEvent.click(deleteAllButton);
+
+    // タスクが削除されない��とを確認
+    expect(screen.getByText("タスク1")).toBeInTheDocument();
+    expect(screen.getByText("タスク2")).toBeInTheDocument();
+    expect(screen.getByText("タスク3")).toBeInTheDocument();
+  });
+
+  test("タスクがない場合、全削除ボタンが無効化されている", () => {
+    render(<TodoList />);
+    const deleteAllButton = screen.getByText("全削除");
+    expect(deleteAllButton).toBeDisabled();
+  });
+  
+  test("タスクがない場合、全削除ボタンをクリックしても確認ダイアログが表示されない", () => {
+    render(<TodoList />);
+    const deleteAllButton = screen.getByText("全削除");
+  
+    const confirmMock = jest.spyOn(window, "confirm");
+    fireEvent.click(deleteAllButton);
+    expect(confirmMock).not.toHaveBeenCalled();
+  });
+  
 });
