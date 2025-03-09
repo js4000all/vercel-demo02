@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import TodoList from "../TodoList";
+import TodoList, { LOCAL_STORAGE_KEY } from "../TodoList";
 
 describe("TodoList コンポーネントのテスト", () => {
   test("入力フィールドと追加ボタンが表示される", () => {
@@ -131,4 +131,44 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(confirmMock).not.toHaveBeenCalled();
   });
   
+  test("アプリ起動時に localStorage からタスクを読み込む", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["保存されたタスク"]));
+    render(<TodoList />);
+    expect(screen.getByText("保存されたタスク")).toBeInTheDocument();
+  });
+
+  test("タスクを追加すると localStorage に保存される", () => {
+    render(<TodoList />);
+    const input = screen.getByPlaceholderText("タスクを入力");
+    const addButton = screen.getByText("追加");
+
+    fireEvent.change(input, { target: { value: "新しいタスク" } });
+    fireEvent.click(addButton);
+
+    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual(["新しいタスク"]);
+  });
+
+  test("タスクを削除すると localStorage からも削除される", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["タスクA", "タスクB"]));
+
+    render(<TodoList />);
+    const deleteButton = screen.getByTestId("delete-0");
+
+    fireEvent.click(deleteButton);
+
+    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual(["タスクB"]);
+  });
+
+  test("全削除を実行すると localStorage も空になる", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["タスク1", "タスク2"]));
+
+    render(<TodoList />);
+    const deleteAllButton = screen.getByText("全削除");
+
+    jest.spyOn(window, "confirm").mockImplementation(() => true);
+    fireEvent.click(deleteAllButton);
+
+    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual([]);
+  });
+
 });
