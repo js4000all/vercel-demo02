@@ -1,12 +1,13 @@
 import React from "react";
 import Counter from "./Counter";
+import TodoList from "./TodoList";
 
 function App() {
   return (
     <div>
-      <h1>カウンターアプリ</h1>
+      <h1>マイアプリ</h1>
+      <TodoList />
       <Counter title="カウンター1" />
-      <Counter title="カウンター2" />
     </div>
   );
 }
