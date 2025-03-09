@@ -2,15 +2,21 @@ import React, { useState, useEffect } from "react";
 import RadioGroup from "./RadioGroup";
 
 function Counter({title}) {
-  const initialState = JSON.parse(localStorage.getItem("counterData")) || { count: 0, maxCount: 10 };
+  const _STORAGE_KEY = "counterData";
+  const initialState = JSON.parse(localStorage.getItem(_STORAGE_KEY)) || { count: 0, minCount:0, maxCount: 5 };
 
   const [count, setCount] = useState(initialState.count);
-  const [minCount, setMinCount] = useState(0);
+  const [minCount, setMinCount] = useState(initialState.minCount);
   const [maxCount, setMaxCount] = useState(initialState.maxCount);
-
+  const [isPersistenceEnabled, setIsPersistenceEnabled] = useState(
+    localStorage.getItem(_STORAGE_KEY) !== null
+  );
+  
   useEffect(() => {
-    localStorage.setItem("counterData", JSON.stringify({ count, maxCount }));
-  }, [count, maxCount]);
+    if (isPersistenceEnabled) {
+      localStorage.setItem(_STORAGE_KEY, JSON.stringify({ count, minCount, maxCount }));
+    }
+  }, [count, minCount, maxCount]);
 
   const incrementCount = () => {
     if(count < maxCount){
@@ -30,12 +36,22 @@ function Counter({title}) {
     setMaxCount(newMax);
   };
   const changeMinCount = ({target}) => {
-    const newMin = parseInt(target.value, 0);
+    const newMin = parseInt(target.value, 10);
     setMinCount(newMin);
     if (count < newMin) {
       setCount(newMin);
     }
   }
+  const togglePersistence = () => {
+    const newPersistenceEnabled = !isPersistenceEnabled;
+    setIsPersistenceEnabled(newPersistenceEnabled);
+    if(newPersistenceEnabled){
+      localStorage.setItem(_STORAGE_KEY, JSON.stringify({ count, minCount, maxCount}));
+    }
+    else{
+      localStorage.removeItem(_STORAGE_KEY);
+    }
+  };
 
   return (
     <div style={{
@@ -80,6 +96,16 @@ function Counter({title}) {
         selectedValue={minCount}
         onChange={changeMinCount}
       />
+      <div style={{ marginTop: "20px" }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={isPersistenceEnabled}
+            onChange={togglePersistence}
+          />
+          ローカルストレージに保存する
+        </label>
+      </div>
     </div>
   );
 }
