@@ -1,5 +1,5 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import assert from "node:assert";
 import Counter from "../Counter";
 
 describe("Counter コンポーネントのテスト", () => {
@@ -29,18 +29,19 @@ describe("Counter コンポーネントのテスト", () => {
 
     test("チェックボックスの切り替えが localStorage に反映される", () => {
         render(<Counter title="Test Counter" />);
-        const checkbox = screen.getByLabelText("ローカルストレージに保存する");
+        const checkbox = screen.getByRole<HTMLInputElement>("checkbox");
         fireEvent.click(checkbox);
         expect(checkbox.checked).toBe(true); // 一度クリックすると true になる
 
-        const storedData = JSON.parse(localStorage.getItem("counterData"));
-        expect(Object.keys(storedData))
+        const storedData = localStorage.getItem("counterData");
+        assert(storedData !== null);
+        expect(Object.keys(JSON.parse(storedData)))
             .toEqual(expect.arrayContaining(["count", "minCount", "maxCount"]));
     });
 
     test("チェックボックスをOFFにすると、localStorageから消える", () => {
         render(<Counter title="Test Counter" />);
-        const checkbox = screen.getByLabelText("ローカルストレージに保存する");
+        const checkbox = screen.getByRole<HTMLInputElement>("checkbox");
         fireEvent.click(checkbox);
         fireEvent.click(checkbox);
         expect(checkbox.checked).toBe(false); // 二度クリックすると false に戻る

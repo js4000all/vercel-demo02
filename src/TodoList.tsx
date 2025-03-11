@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 
 export const LOCAL_STORAGE_KEY = "todoList";
 
-function TodoList() {
-  const initialState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+interface Task {
+  content: string;
+}
 
-  const [tasks, setTasks] = useState(initialState);
-  const [input, setInput] = useState("");
+function TodoList() {
+  const initialState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
+
+  const [tasks, setTasks] = useState<Task[]>(initialState);
+  const [input, setInput] = useState<string>("");
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
@@ -14,11 +18,11 @@ function TodoList() {
 
   const addTask = () => {
     if (input.trim() === "") return;
-    setTasks([...tasks, input]);
+    setTasks([...tasks, {content: input}]);
     setInput("");
   };
 
-  const deleteTask = (index) => {
+  const deleteTask = (index: number) => {
     setTasks(tasks.filter((_, i) => i !== index));
   };
 
@@ -47,7 +51,7 @@ function TodoList() {
       <ul>
         {tasks.map((task, index) => (
           <li key={index}>
-            {task} <button
+            {task.content} <button
                 data-testid={`delete-${index}`}
                 onClick={() => deleteTask(index)}>削除</button>
           </li>

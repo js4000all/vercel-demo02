@@ -1,5 +1,5 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import assert from "node:assert";
 import TodoList, { LOCAL_STORAGE_KEY } from "../TodoList";
 
 describe("TodoList コンポーネントのテスト", () => {
@@ -145,7 +145,9 @@ describe("TodoList コンポーネントのテスト", () => {
     fireEvent.change(input, { target: { value: "新しいタスク" } });
     fireEvent.click(addButton);
 
-    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual(["新しいタスク"]);
+    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    assert(storedData !== null);
+    expect(JSON.parse(storedData)).toEqual(["新しいタスク"]);
   });
 
   test("タスクを削除すると localStorage からも削除される", () => {
@@ -153,10 +155,11 @@ describe("TodoList コンポーネントのテスト", () => {
 
     render(<TodoList />);
     const deleteButton = screen.getByTestId("delete-0");
-
     fireEvent.click(deleteButton);
 
-    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual(["タスクB"]);
+    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    assert(storedData !== null);
+    expect(JSON.parse(storedData)).toEqual(["タスクB"]);
   });
 
   test("全削除を実行すると localStorage も空になる", () => {
@@ -168,7 +171,9 @@ describe("TodoList コンポーネントのテスト", () => {
     jest.spyOn(window, "confirm").mockImplementation(() => true);
     fireEvent.click(deleteAllButton);
 
-    expect(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))).toEqual([]);
+    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    assert(storedData !== null);
+    expect(JSON.parse(storedData)).toEqual([]);
   });
 
 });
