@@ -132,7 +132,7 @@ describe("TodoList コンポーネントのテスト", () => {
   });
   
   test("アプリ起動時に localStorage からタスクを読み込む", () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["保存されたタスク"]));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([{"content": "保存されたタスク"}]));
     render(<TodoList />);
     expect(screen.getByText("保存されたタスク")).toBeInTheDocument();
   });
@@ -147,7 +147,7 @@ describe("TodoList コンポーネントのテスト", () => {
 
     const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
     assert(storedData !== null);
-    expect(JSON.parse(storedData)).toEqual(["新しいタスク"]);
+    expect(JSON.parse(storedData)).toEqual([{"content": "新しいタスク"}]);
   });
 
   test("タスクを削除すると localStorage からも削除される", () => {
