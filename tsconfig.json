@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",                                  // 最新のJavaScriptを出力
+    "module": "ESNext",                                  // 最新のモジュール仕様を使用
+    "lib": ["dom", "dom.iterable", "esnext"],            // DOM & 最新のES機能を利用
+    "jsx": "react-jsx",                                  // ReactのJSXをサポート
+    "strict": true,                                      // 厳格な型チェックを有効化
+    "skipLibCheck": true,                                // node_modules の型チェックをスキップ
+    "esModuleInterop": true,                             // ESモジュールとCommonJSの互換性
+    "forceConsistentCasingInFileNames": true,            // 大文字・小文字の不整合を防ぐ
+    "noFallthroughCasesInSwitch": true,                  // switch のフォールスルーを禁止
+    "noImplicitReturns": true,                           // 戻り値の型チェックを厳格化
+    "resolveJsonModule": true,                           // JSONモジュールのインポートを許可
+    "isolatedModules": true,                             // 各ファイルを独立したモジュールとして扱う
+    "moduleResolution": "node",                          // Node.js のモジュール解決を利用
+    "baseUrl": ".",                                      // モジュール解決のベースパス
+    "paths": { "@/*": ["src/*"] }                        // モジュールパスのエイリアス
+  },
+  "include": ["src/**/*"],                               // `src` フォルダ内の全てのファイルを対象
+  "exclude": ["node_modules", "dist"]                    // `node_modules` と `dist` を対象外
+}

@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import RadioGroup from "./RadioGroup";
 
-function Counter({title}) {
+interface CounterProps {
+  title: string;
+}
+
+const Counter: React.FC<CounterProps> = ({title}) => {
   const _STORAGE_KEY = "counterData";
-  const initialState = JSON.parse(localStorage.getItem(_STORAGE_KEY)) || { count: 0, minCount:0, maxCount: 5 };
+  const initialStateJson = localStorage.getItem(_STORAGE_KEY);
+  const initialState = initialStateJson ? JSON.parse(initialStateJson) : { count: 0, minCount:0, maxCount: 5 };
 
   const [count, setCount] = useState(initialState.count);
   const [minCount, setMinCount] = useState(initialState.minCount);
@@ -31,11 +36,11 @@ function Counter({title}) {
   const resetCount = () => {
     setCount(0);
   };
-  const changeMaxCount = ({target}) => {
+  const changeMaxCount = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const newMax = parseInt(target.value, 10);
     setMaxCount(newMax);
   };
-  const changeMinCount = ({target}) => {
+  const changeMinCount = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const newMin = parseInt(target.value, 10);
     setMinCount(newMin);
     if (count < newMin) {

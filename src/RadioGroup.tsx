@@ -1,6 +1,18 @@
 import React from "react";
 
-function RadioGroup({ label, options, selectedValue, onChange }) {
+interface Option {
+  value: string | number; // 数値・文字列どちらも許可
+  label: string;
+}
+
+interface RadioGroupProps {
+  label: string;
+  options: Option[];
+  selectedValue: string | number;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const RadioGroup: React.FC<RadioGroupProps> = ({ label, options, selectedValue, onChange }) => {
   return (
     <div style={{ marginTop: "15px" }}>
       <label>{label}</label>
