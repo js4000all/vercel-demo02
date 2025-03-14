@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
 import assert from "node:assert";
 import TodoList, { LOCAL_STORAGE_KEY } from "../TodoList";
 
@@ -83,7 +84,7 @@ describe("TodoList コンポーネントのテスト", () => {
 
     // 全削除ボタンをクリック
     const deleteAllButton = screen.getByText("全削除");
-    jest.spyOn(window, "confirm").mockImplementation(() => true);
+    vi.spyOn(window, "confirm").mockImplementation(() => true);
     fireEvent.click(deleteAllButton);
 
     // すべてのタスクが削除されていることを確認
@@ -107,7 +108,7 @@ describe("TodoList コンポーネントのテスト", () => {
 
     // 全削除ボタンをクリック（キャンセルを選択）
     const deleteAllButton = screen.getByText("全削除");
-    jest.spyOn(window, "confirm").mockImplementation(() => false);
+    vi.spyOn(window, "confirm").mockImplementation(() => false);
     fireEvent.click(deleteAllButton);
 
     // タスクが削除されない��とを確認
@@ -126,7 +127,7 @@ describe("TodoList コンポーネントのテスト", () => {
     render(<TodoList />);
     const deleteAllButton = screen.getByText("全削除");
   
-    const confirmMock = jest.spyOn(window, "confirm");
+    const confirmMock = vi.spyOn(window, "confirm");
     fireEvent.click(deleteAllButton);
     expect(confirmMock).not.toHaveBeenCalled();
   });
@@ -168,7 +169,7 @@ describe("TodoList コンポーネントのテスト", () => {
     render(<TodoList />);
     const deleteAllButton = screen.getByText("全削除");
 
-    jest.spyOn(window, "confirm").mockImplementation(() => true);
+    vi.spyOn(window, "confirm").mockImplementation(() => true);
     fireEvent.click(deleteAllButton);
 
     const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);

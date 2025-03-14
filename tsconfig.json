@@ -13,6 +13,7 @@
     "resolveJsonModule": true,                           // JSONモジュールのインポートを許可
     "isolatedModules": true,                             // 各ファイルを独立したモジュールとして扱う
     "moduleResolution": "node",                          // Node.js のモジュール解決を利用
+    "types": ["vitest/globals"],                         // テストランナーの型定義を追加
     "baseUrl": ".",                                      // モジュール解決のベースパス
     "paths": { "@/*": ["src/*"] }                        // モジュールパスのエイリアス
   },
