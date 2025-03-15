@@ -1,18 +1,23 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import assert from "node:assert";
 import TodoList, { STORAGE_KEY } from "./TodoList";
 import { MemoryStorage } from "@/storage";
 
 describe("TodoList コンポーネントのテスト", () => {
-  test("入力フィールドと追加ボタンが表示される", () => {
+  test("入力フィールドと追加ボタンが表示される", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     expect(screen.getByPlaceholderText("タスクを入力")).toBeInTheDocument();
-    expect(screen.getByText("追加")).toBeInTheDocument();
   });
 
-  test("タスクを追加できる", () => {
+  test("タスクを追加できる", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -21,8 +26,11 @@ describe("TodoList コンポーネントのテスト", () => {
 
     expect(screen.getByText("新しいタスク")).toBeInTheDocument();
   });
-  test("タスクを2つ追加すると、リストの要素数が2になる", () => {
+  test("タスクを2つ追加すると、リストの要素数が2になる", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -33,8 +41,11 @@ describe("TodoList コンポーネントのテスト", () => {
 
     expect(screen.getAllByRole("listitem").length).toBe(2); // 2つのタスクが追加されていることを確認
   });
-  test("タスクを削除できる", () => {
+  test("タスクを削除できる", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -47,8 +58,11 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.queryByText("削除するタスク")).not.toBeInTheDocument();
   });
 
-  test("特定のタスクを削除できる", () => {
+  test("特定のタスクを削除できる", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -70,8 +84,11 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.getByText("タスクC")).toBeInTheDocument();
   });
 
-  test("全削除ボタンをクリックしてOKすると、すべてのタスクが削除される", () => {
+  test("全削除ボタンをクリックしてOKすると、すべてのタスクが削除される", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -94,8 +111,11 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.queryByText("タスク3")).not.toBeInTheDocument();
   });
 
-  test("全削除ボタンをクリックしてキャンセルすると、タスクは削除されない", () => {
+  test("全削除ボタンをクリックしてキャンセルすると、タスクは削除されない", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -118,14 +138,20 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.getByText("タスク3")).toBeInTheDocument();
   });
 
-  test("タスクがない場合、全削除ボタンが無効化されている", () => {
+  test("タスクがない場合、全削除ボタンが無効化されている", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const deleteAllButton = screen.getByText("全削除");
     expect(deleteAllButton).toBeDisabled();
   });
   
-  test("タスクがない場合、全削除ボタンをクリックしても確認ダイアログが表示されない", () => {
+  test("タスクがない場合、全削除ボタンをクリックしても確認ダイアログが表示されない", async () => {
     render(<TodoList storage={new MemoryStorage()} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const deleteAllButton = screen.getByText("全削除");
   
     const confirmMock = vi.spyOn(window, "confirm");
@@ -137,12 +163,18 @@ describe("TodoList コンポーネントのテスト", () => {
     const storage = new MemoryStorage();
     storage.save(STORAGE_KEY, JSON.stringify([{content: "保存されたタスク"}]));
     render(<TodoList storage={storage} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     expect(await screen.findByText("保存されたタスク")).toBeInTheDocument();
   });
 
   test("タスクを追加すると localStorage に保存される", async () => {
     const storage = new MemoryStorage();
     render(<TodoList storage={storage} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -161,6 +193,9 @@ describe("TodoList コンポーネントのテスト", () => {
     storage.save(STORAGE_KEY, data);
 
     render(<TodoList storage={storage} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     const deleteButton = await screen.findByTestId("delete-0");
     fireEvent.click(deleteButton);
 
@@ -175,6 +210,9 @@ describe("TodoList コンポーネントのテスト", () => {
       JSON.stringify([{content: "タスク1"}, {content: "タスク2"}]));
 
     render(<TodoList storage={storage} />);
+    await waitFor(() => {
+      expect(screen.getByText("追加")).toBeInTheDocument();
+    });
     expect(await screen.findByText("タスク1")).toBeInTheDocument();
     expect(await screen.findByText("タスク2")).toBeInTheDocument();
     const deleteAllButton = screen.getByText("全削除");
