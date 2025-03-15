@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from "react";
+import { StorageKey, IStorage } from "@/interfaces";
 
-export const LOCAL_STORAGE_KEY = "todoList";
+export const STORAGE_KEY: StorageKey = { name: "todoList"};
 
 interface Task {
   content: string;
 }
 
-function TodoList() {
-  const initialState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? "[]");
+interface Props {
+  storage: IStorage;
+}
 
-  const [tasks, setTasks] = useState<Task[]>(initialState);
+const TodoList: React.FC<Props> = ({ storage }) => {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [input, setInput] = useState<string>("");
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
+    storage.load(STORAGE_KEY).then((tasks_json) => {
+      if(tasks_json !== null) {
+        setTasks(JSON.parse(tasks_json));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    storage.save(STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
   const addTask = () => {

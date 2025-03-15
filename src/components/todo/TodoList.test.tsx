@@ -1,17 +1,18 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import assert from "node:assert";
-import TodoList, { LOCAL_STORAGE_KEY } from "./TodoList";
+import TodoList, { STORAGE_KEY } from "./TodoList";
+import { MemoryStorage } from "@/storage";
 
 describe("TodoList コンポーネントのテスト", () => {
   test("入力フィールドと追加ボタンが表示される", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     expect(screen.getByPlaceholderText("タスクを入力")).toBeInTheDocument();
     expect(screen.getByText("追加")).toBeInTheDocument();
   });
 
   test("タスクを追加できる", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -21,7 +22,7 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.getByText("新しいタスク")).toBeInTheDocument();
   });
   test("タスクを2つ追加すると、リストの要素数が2になる", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -33,7 +34,7 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(screen.getAllByRole("listitem").length).toBe(2); // 2つのタスクが追加されていることを確認
   });
   test("タスクを削除できる", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -47,7 +48,7 @@ describe("TodoList コンポーネントのテスト", () => {
   });
 
   test("特定のタスクを削除できる", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -70,7 +71,7 @@ describe("TodoList コンポーネントのテスト", () => {
   });
 
   test("全削除ボタンをクリックしてOKすると、すべてのタスクが削除される", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -94,7 +95,7 @@ describe("TodoList コンポーネントのテスト", () => {
   });
 
   test("全削除ボタンをクリックしてキャンセルすると、タスクは削除されない", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
@@ -118,13 +119,13 @@ describe("TodoList コンポーネントのテスト", () => {
   });
 
   test("タスクがない場合、全削除ボタンが無効化されている", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const deleteAllButton = screen.getByText("全削除");
     expect(deleteAllButton).toBeDisabled();
   });
   
   test("タスクがない場合、全削除ボタンをクリックしても確認ダイアログが表示されない", () => {
-    render(<TodoList />);
+    render(<TodoList storage={new MemoryStorage()} />);
     const deleteAllButton = screen.getByText("全削除");
   
     const confirmMock = vi.spyOn(window, "confirm");
@@ -132,47 +133,56 @@ describe("TodoList コンポーネントのテスト", () => {
     expect(confirmMock).not.toHaveBeenCalled();
   });
   
-  test("アプリ起動時に localStorage からタスクを読み込む", () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([{"content": "保存されたタスク"}]));
-    render(<TodoList />);
-    expect(screen.getByText("保存されたタスク")).toBeInTheDocument();
+  test("アプリ起動時に localStorage からタスクを読み込む", async () => {
+    const storage = new MemoryStorage();
+    storage.save(STORAGE_KEY, JSON.stringify([{content: "保存されたタスク"}]));
+    render(<TodoList storage={storage} />);
+    expect(await screen.findByText("保存されたタスク")).toBeInTheDocument();
   });
 
-  test("タスクを追加すると localStorage に保存される", () => {
-    render(<TodoList />);
+  test("タスクを追加すると localStorage に保存される", async () => {
+    const storage = new MemoryStorage();
+    render(<TodoList storage={storage} />);
     const input = screen.getByPlaceholderText("タスクを入力");
     const addButton = screen.getByText("追加");
 
     fireEvent.change(input, { target: { value: "新しいタスク" } });
     fireEvent.click(addButton);
 
-    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const storedData = await storage.load(STORAGE_KEY);
     assert(storedData !== null);
-    expect(JSON.parse(storedData)).toEqual([{"content": "新しいタスク"}]);
+    expect(JSON.parse(storedData)).toEqual([{content: "新しいタスク"}]);
   });
 
-  test("タスクを削除すると localStorage からも削除される", () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["タスクA", "タスクB"]));
+  test("タスクを削除すると localStorage からも削除される", async () => {
+    const storage = new MemoryStorage();
+    const data = JSON.stringify([{content: "タスクA"}, {content: "タスクB"}]);
+    console.log("data", data);
+    storage.save(STORAGE_KEY, data);
 
-    render(<TodoList />);
-    const deleteButton = screen.getByTestId("delete-0");
+    render(<TodoList storage={storage} />);
+    const deleteButton = await screen.findByTestId("delete-0");
     fireEvent.click(deleteButton);
 
-    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const storedData = await storage.load(STORAGE_KEY);
     assert(storedData !== null);
-    expect(JSON.parse(storedData)).toEqual(["タスクB"]);
+    expect(JSON.parse(storedData)).toEqual([{content: "タスクB"}]);
   });
 
-  test("全削除を実行すると localStorage も空になる", () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(["タスク1", "タスク2"]));
+  test("全削除を実行すると localStorage も空になる", async () => {
+    const storage = new MemoryStorage();
+    storage.save(STORAGE_KEY, 
+      JSON.stringify([{content: "タスク1"}, {content: "タスク2"}]));
 
-    render(<TodoList />);
+    render(<TodoList storage={storage} />);
+    expect(await screen.findByText("タスク1")).toBeInTheDocument();
+    expect(await screen.findByText("タスク2")).toBeInTheDocument();
     const deleteAllButton = screen.getByText("全削除");
 
     vi.spyOn(window, "confirm").mockImplementation(() => true);
     fireEvent.click(deleteAllButton);
 
-    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const storedData = await storage.load(STORAGE_KEY);
     assert(storedData !== null);
     expect(JSON.parse(storedData)).toEqual([]);
   });

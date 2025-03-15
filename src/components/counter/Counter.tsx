@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { RadioGroup } from "@/shared/ui";
+import { StorageKey, IStorage } from "@/interfaces";
+
+export const STORAGE_KEY: StorageKey = { name: "counterData" };
 
 interface CounterProps {
   title: string;
+  storage: IStorage;
 }
 
-const Counter: React.FC<CounterProps> = ({title}) => {
-  const _STORAGE_KEY = "counterData";
-  const initialStateJson = localStorage.getItem(_STORAGE_KEY);
-  const initialState = initialStateJson ? JSON.parse(initialStateJson) : { count: 0, minCount:0, maxCount: 5 };
-
-  const [count, setCount] = useState(initialState.count);
-  const [minCount, setMinCount] = useState(initialState.minCount);
-  const [maxCount, setMaxCount] = useState(initialState.maxCount);
-  const [isPersistenceEnabled, setIsPersistenceEnabled] = useState(
-    localStorage.getItem(_STORAGE_KEY) !== null
-  );
+const Counter: React.FC<CounterProps> = ({title, storage}) => {
+  const [count, setCount] = useState(0);
+  const [minCount, setMinCount] = useState(0);
+  const [maxCount, setMaxCount] = useState(5);
+  const [isPersistenceEnabled, setIsPersistenceEnabled] = useState(false);
   
   useEffect(() => {
+    storage.load(STORAGE_KEY).then((data) => {
+      if (data !== null) {
+        const { count, minCount, maxCount } = JSON.parse(data);
+        setCount(count);
+        setMinCount(minCount);
+        setMaxCount(maxCount);
+        setIsPersistenceEnabled(true);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (isPersistenceEnabled) {
-      localStorage.setItem(_STORAGE_KEY, JSON.stringify({ count, minCount, maxCount }));
+      storage.save(STORAGE_KEY, JSON.stringify({ count, minCount, maxCount }));
     }
   }, [count, minCount, maxCount]);
 
@@ -51,10 +61,10 @@ const Counter: React.FC<CounterProps> = ({title}) => {
     const newPersistenceEnabled = !isPersistenceEnabled;
     setIsPersistenceEnabled(newPersistenceEnabled);
     if(newPersistenceEnabled){
-      localStorage.setItem(_STORAGE_KEY, JSON.stringify({ count, minCount, maxCount}));
+      storage.save(STORAGE_KEY, JSON.stringify({ count, minCount, maxCount}));
     }
     else{
-      localStorage.removeItem(_STORAGE_KEY);
+      storage.remove(STORAGE_KEY);
     }
   };
 
