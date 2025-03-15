@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import assert from "node:assert";
-import TodoList, { LOCAL_STORAGE_KEY } from "../TodoList";
+import TodoList, { LOCAL_STORAGE_KEY } from "./TodoList";
 
 describe("TodoList コンポーネントのテスト", () => {
   test("入力フィールドと追加ボタンが表示される", () => {
