@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import assert from "node:assert";
-import Counter from "../Counter";
+import Counter from "./Counter";
 
 describe("Counter コンポーネントのテスト", () => {
     test("初期表示でカウントが正しく表示される", () => {

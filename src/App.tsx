@@ -1,5 +1,4 @@
-import Counter from "./Counter";
-import TodoList from "./TodoList";
+import { Counter, TodoList } from "@/components";
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import RadioGroup from "./RadioGroup";
+import { RadioGroup } from "@/shared/ui";
 
 interface CounterProps {
   title: string;
