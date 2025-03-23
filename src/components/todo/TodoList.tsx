@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StorageKey, IStorage } from "@/interfaces";
 
-export const STORAGE_KEY: StorageKey = { name: "todoList"};
+export const STORAGE_KEY: StorageKey = { name: "todoList.json"};
 
 interface Task {
   content: string;
@@ -14,17 +14,27 @@ interface Props {
 const TodoList: React.FC<Props> = ({ storage }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [input, setInput] = useState<string>("");
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    storage.load(STORAGE_KEY).then((tasks_json) => {
-      if(tasks_json !== null) {
+    storage.load(STORAGE_KEY)
+    .then((tasks_json) => {
+      if (tasks_json !== null) {
         setTasks(JSON.parse(tasks_json));
       }
+    })
+    .catch((err) => {
+      console.error("ストレージからの読み込みに失敗しました:", err);
+    })
+    .finally(() => {
+      setLoaded(true); // 成功・失敗問わずロード完了
     });
   }, []);
 
   useEffect(() => {
-    storage.save(STORAGE_KEY, JSON.stringify(tasks));
+    if(loaded){
+      storage.save(STORAGE_KEY, JSON.stringify(tasks));
+    }
   }, [tasks]);
 
   const addTask = () => {
@@ -44,6 +54,8 @@ const TodoList: React.FC<Props> = ({ storage }) => {
       setTasks([]);
     }
   };
+
+  if (!loaded) return <div>読み込み中...</div>;
 
   return (
     <div>
