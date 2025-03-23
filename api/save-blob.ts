@@ -9,16 +9,14 @@ export default async function handler(
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
-    console.debug("body: ", req.body);
     const { key, value } = req.body;
-    console.debug("key: ", key);
-    console.debug("value:" , value);
     if (!key || typeof value !== "string") {
       return res.status(400).json({ error: "Invalid input" });
     }
     const result = await put(key, value, {
       access: "public",
       addRandomSuffix: false,
+      cacheControlMaxAge: 0,
     });
     console.debug("result: ", result);
     return res.status(200).json({ url: result.url });
